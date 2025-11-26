@@ -5,6 +5,7 @@ import org.example.ejerciciowebdinamica.models.Categoria;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -15,6 +16,25 @@ public class CategoriaService {
         val c1 = Categoria.builder().id(generarId(12)).nombre("TECLADOS").build();
         val c2 =  Categoria.builder().id(generarId(12)).nombre("ALMACENAMIENTO").build();
         val c3 = Categoria.builder().id(generarId(12)).nombre("ACCESORIOS").build();
+        val c4 = Categoria.builder().id(generarId(12)).nombre("MONITORES").build();
+        val c5 = Categoria.builder().id(generarId(12)).nombre("RATONES").build();
+
+        categorias.put(c1.getId(), c1);
+        categorias.put(c2.getId(), c2);
+        categorias.put(c3.getId(), c3);
+        categorias.put(c4.getId(), c4);
+        categorias.put(c5.getId(), c5);
+    }
+
+    public Optional<Categoria> getByName(String nombre) {
+        for(Categoria categoria : categorias.values()){
+            if(categoria.getNombre().equals(nombre)) return Optional.of(categoria);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Categoria> getById(String id) {
+        return Optional.ofNullable(categorias.get(id));
     }
 
     private String generarId(Integer longitud) {

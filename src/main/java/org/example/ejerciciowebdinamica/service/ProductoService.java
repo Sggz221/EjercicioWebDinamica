@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 public class ProductoService {
     private HashMap<String, Producto> productos;
     public ProductoService() {
+        CategoriaService categoriaService;
         // Inicializamos el mapa
         this.productos = new HashMap<>();
 
@@ -19,7 +20,7 @@ public class ProductoService {
                 .nombre("Auriculares Bluetooth")
                 .descripcion("Cancelación de ruido activa y 20h de batería")
                 .precio(59.99)
-                .categoria("TECNOLOGÍA")
+                .categoria("ACCESORIOS")
                 .build();
 
         val p2 = Producto.builder()
@@ -27,7 +28,7 @@ public class ProductoService {
                 .nombre("Teclado Mecánico")
                 .descripcion("Retroiluminación RGB y switches azules")
                 .precio(85.50)
-                .categoria("TECNOLOGÍA")
+                .categoria("TECLADOS")
                 .build();
 
         val p3 = Producto.builder()
@@ -35,7 +36,7 @@ public class ProductoService {
                 .nombre("Monitor 24 Pulgadas")
                 .descripcion("Pantalla Full HD ideal para oficina")
                 .precio(129.00)
-                .categoria("TECNOLOGÍA")
+                .categoria("MONITORES")
                 .build();
 
         val p4 = Producto.builder()
@@ -43,7 +44,7 @@ public class ProductoService {
                 .nombre("Ratón Gaming")
                 .descripcion("Alta precisión 16000 DPI")
                 .precio(34.25)
-                .categoria("TECNOLOGÍA")
+                .categoria("RATONES")
                 .build();
 
         val p5 = Producto.builder()
@@ -51,7 +52,7 @@ public class ProductoService {
                 .nombre("Soporte para Laptop")
                 .descripcion("Aluminio ajustable y ergonómico")
                 .precio(22.99)
-                .categoria("TECNOLOGÍA")
+                .categoria("ACCESORIOS")
                 .build();
 
         val p6 = Producto.builder()
@@ -59,7 +60,7 @@ public class ProductoService {
                 .nombre("Mochila Antirrobo")
                 .descripcion("Impermeable con puerto de carga USB")
                 .precio(45.00)
-                .categoria("TECNOLOGÍA")
+                .categoria("ACCESORIOS")
                 .build();
 
         val p7 = Producto.builder()
@@ -67,6 +68,7 @@ public class ProductoService {
                 .nombre("Webcam HD")
                 .descripcion("Resolución 1080p con micrófono integrado")
                 .precio(29.95)
+                .categoria("ACCESORIOS")
                 .build();
 
         val p8 = Producto.builder()
@@ -74,7 +76,7 @@ public class ProductoService {
                 .nombre("Disco SSD 1TB")
                 .descripcion("Velocidad de lectura ultra rápida")
                 .precio(95.00)
-                .categoria("TECNOLOGÍA")
+                .categoria("ALMACENAMIENTO")
                 .build();
 
         // Insertamos todo en el mapa
@@ -88,9 +90,9 @@ public class ProductoService {
         this.productos.put(p8.getId(), p8);
     }
 
-    public List<Producto> getProductos(Optional<String> nombre, Optional<Double> precioMaximo, String sortBy, String direction) {
+    public List<Producto> getProductos(Optional<String> nombre, Optional<Double> precioMaximo, Optional<String> categoria, String sortBy, String direction) {
 
-        Stream<Producto> stream = getProductoStream(nombre, precioMaximo);
+        Stream<Producto> stream = getProductoStream(nombre, precioMaximo, categoria);
 
         Comparator<Producto> comparador = switch (sortBy.toLowerCase()) {
             case "precio" -> Comparator.comparing(Producto::getPrecio);
@@ -111,7 +113,7 @@ public class ProductoService {
         return Optional.ofNullable(productos.get(id));
     }
 
-    private Stream<Producto> getProductoStream(Optional<String> nombre, Optional<Double> precioMaximo) {
+    private Stream<Producto> getProductoStream(Optional<String> nombre, Optional<Double> precioMaximo, Optional<String> categoria) {
         Stream<Producto> stream = productos.values().stream();
 
         // Filtro por Nombre (Ignorando mayúsculas/minúsculas)
@@ -123,6 +125,10 @@ public class ProductoService {
         // Filtro por Precio Máximo
         if (precioMaximo.isPresent()) {
             stream = stream.filter(p -> p.getPrecio() <= precioMaximo.get());
+        }
+        // Filtro por categoría
+        if (categoria.isPresent()) {
+            stream = stream.filter(p -> p.getCategoria().toUpperCase().contains(categoria.get().toUpperCase()));
         }
         return stream;
     }
