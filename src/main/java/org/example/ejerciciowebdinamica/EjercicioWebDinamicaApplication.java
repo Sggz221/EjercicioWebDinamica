@@ -8,6 +8,8 @@ public class EjercicioWebDinamicaApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EjercicioWebDinamicaApplication.class, args);
+        System.out.println("💻 URL de la tienda =>  === http://localhost:8080/ ===");
+        System.out.println("hola");
     }
 
 }

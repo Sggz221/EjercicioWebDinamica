@@ -2,6 +2,7 @@ package org.example.ejerciciowebdinamica.controller;
 
 import lombok.val;
 import org.example.ejerciciowebdinamica.exceptions.ProductoError;
+import org.example.ejerciciowebdinamica.models.Producto;
 import org.example.ejerciciowebdinamica.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,10 +31,10 @@ public class PoductoController {
     public String getProductos(Model model,
                                @RequestParam(required = false) Optional<String> nombre,
                                @RequestParam(required = false) Optional<Double> precioMaximo,
+                               @RequestParam(required = false) Optional<String> categoria,
                                @RequestParam(defaultValue = "id") String sortBy,
                                @RequestParam(defaultValue = "asc") String direction) {
-        String sort = direction.equals("asc") ? "asc" : "desc";
-        model.addAttribute("productos", productoService.getProductos(nombre, precioMaximo, sortBy, direction));
+        model.addAttribute("productos", productoService.getProductos(nombre, precioMaximo, categoria, sortBy, direction));
         return "productos/lista";
     }
 
@@ -47,5 +48,11 @@ public class PoductoController {
         }
         model.addAttribute("producto", producto.get());
         return "productos/detalle";
+    }
+
+    @GetMapping("/productos/crear")
+    public String crearProducto(Model model) {
+        model.addAttribute("producto", new Producto());
+        return "productos/form";
     }
 }
