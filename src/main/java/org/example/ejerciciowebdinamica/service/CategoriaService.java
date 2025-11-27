@@ -37,6 +37,10 @@ public class CategoriaService {
         return Optional.ofNullable(categorias.get(id));
     }
 
+    public Categoria[] findAll() {
+        return categorias.values().toArray(new Categoria[categorias.size()]);
+    }
+
     private String generarId(Integer longitud) {
         String charArray = "QWRTYPSDFGHJKLZXCVBNMqwrtypsdfghjklzxcvbnm1234567890-";
         StringBuilder id = new StringBuilder();

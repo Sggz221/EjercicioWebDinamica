@@ -2,24 +2,32 @@ package org.example.ejerciciowebdinamica.controller;
 
 import lombok.val;
 import org.example.ejerciciowebdinamica.exceptions.ProductoError;
+import org.example.ejerciciowebdinamica.models.Categoria;
 import org.example.ejerciciowebdinamica.models.Producto;
+import org.example.ejerciciowebdinamica.service.CategoriaService;
 import org.example.ejerciciowebdinamica.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 
 @Controller
 @RequestMapping({"/", ""})
 public class PoductoController {
     private ProductoService productoService;
+    private CategoriaService categoriaService;
     @Autowired
-    public PoductoController( ProductoService productoService) {
+    public PoductoController( ProductoService productoService, CategoriaService categoriaService) {
         this.productoService = productoService;
+        this.categoriaService = categoriaService;
+    }
+
+    // Categorias para inyectar en productos
+    @ModelAttribute("categorias")
+    public Categoria[] getCategorias() {
+        return categoriaService.findAll();
     }
 
     @GetMapping
