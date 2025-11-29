@@ -18,12 +18,11 @@
 <div class="container my-5">
     <div class="p-5 text-center bg-danger text-white rounded-3 shadow">
 
-        <h1 class="display-1 fw-bold">404</h1>
-        <h2 class="h3 mb-4">Not Found :(</h2>
+        <h1 class="display-1 fw-bold">{{ error.codigo }} :(</h1>
 
         <hr class="my-4 border-opacity-50 border-white">
 
-        <p class="lead mb-4">{{ mensaje }}</p>
+        <p class="lead mb-4">{{ error.mensaje }}</p>
 
         <a href="/productos" class="btn btn-outline-light px-4">
             Volver al inicio

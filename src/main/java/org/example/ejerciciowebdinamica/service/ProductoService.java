@@ -1,6 +1,8 @@
 package org.example.ejerciciowebdinamica.service;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.ejerciciowebdinamica.exceptions.ProductoException;
 import org.example.ejerciciowebdinamica.models.Producto;
 import org.example.ejerciciowebdinamica.validator.ProductoValidator;
 import org.springframework.stereotype.Service;
@@ -9,10 +11,11 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class ProductoService {
+    private final CategoriaService categoriaService;
     private HashMap<String, Producto> productos;
-    public ProductoService() {
-        CategoriaService categoriaService;
+    public ProductoService(CategoriaService categoriaService) {
         // Inicializamos el mapa
         this.productos = new HashMap<>();
 
@@ -89,29 +92,36 @@ public class ProductoService {
         this.productos.put(p6.getId(), p6);
         this.productos.put(p7.getId(), p7);
         this.productos.put(p8.getId(), p8);
+        this.categoriaService = categoriaService;
     }
 
-    public List<Producto> getProductos(Optional<String> nombre, Optional<Double> precioMaximo, Optional<String> categoria, String sortBy, String direction) {
+    public List<Producto> getProductos(Optional<String> nombre,
+                                  Optional<Double> precioMaximo,
+                                  Optional<String> categoria,
+                                  String sortBy,
+                                  String direction,
+                                  int page,
+                                  int size) {
+        log.info("Obteniendo productos...");
 
+        // 1. Obtenemos el stream filtrado
         Stream<Producto> stream = getProductoStream(nombre, precioMaximo, categoria);
 
+        // 2. Configuramos el comparador
         Comparator<Producto> comparador = switch (sortBy.toLowerCase()) {
             case "precio" -> Comparator.comparing(Producto::getPrecio);
             case "id" -> Comparator.comparing(Producto::getId);
             default -> Comparator.comparing(Producto::getNombre);
         };
 
-        // Decidimos por qué campo ordenar
-
         if ("desc".equalsIgnoreCase(direction)) {
             comparador = comparador.reversed();
         }
 
-        return stream.sorted(comparador).toList();
-    }
-
-    public Optional<Producto> getProducto(String id) {
-        return Optional.ofNullable(productos.get(id));
+        return stream.sorted(comparador)
+                .skip((long) page * size) // Se empieza por la pagina 0 ojo
+                .limit(size)
+                .toList();
     }
 
     private Stream<Producto> getProductoStream(Optional<String> nombre, Optional<Double> precioMaximo, Optional<String> categoria) {
@@ -134,11 +144,35 @@ public class ProductoService {
         return stream;
     }
 
+    public Optional<Producto> getProducto(String id) {
+        return Optional.ofNullable(productos.get(id));
+    }
+
     public String saveProducto(Producto producto) {
+        log.info("Guardando producto...");
         ProductoValidator.validarProducto(producto); // Lanzará una excepción si no es válido
         val id = generarId(12);
         producto.setId(id);
         productos.put(id, producto);
+        log.info("Producto guardado");
+        return id;
+    }
+
+    public String updateProducto(String id, Producto producto) {
+        log.info("Actualizando producto...");
+        if (categoriaService.getByName(producto.getCategoria()).isEmpty()) throw new ProductoException.CategoryNotFoundException();
+        ProductoValidator.validarProducto(producto); // Lanza una excepcion
+        if (!productos.containsKey(id)) throw new ProductoException.NotFoundException();
+        productos.put(id, producto);
+        log.info("Producto actualizado");
+        return id;
+    }
+
+    public String deleteProducto(String id) {
+        log.info("Eliminando producto...");
+        if (!productos.containsKey(id)) throw new ProductoException.NotFoundException();
+        productos.remove(id);
+        log.info("Producto eliminado");
         return id;
     }
 
@@ -150,6 +184,5 @@ public class ProductoService {
         }
         return id.toString();
     }
-
 
 }

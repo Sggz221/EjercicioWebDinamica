@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Mi Tienda - Crear</title>
+    <title>Mi Tienda - Formulario</title>
 </head>
 <body>
 
@@ -18,7 +18,7 @@
 
 <div class="container my-4">
     <div class="p-4 text-center bg-primary text-white rounded-3 shadow">
-        <h1 class="fw-bold mb-0">Crear Producto</h1>
+        <h1 class="fw-bold mb-0">Formulario productos</h1>
     </div>
 </div>
 
@@ -28,37 +28,101 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
 
-                    <form action="/productos/crear/submit" method="post">
+                    {% if hasGlobalErrors('producto') %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>¡Atención!</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for err in getGlobalErrors('producto') %}
+                            <li>{{ err.defaultMessage }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+
+                    <form action="{% if producto.id == null %}/productos/crear/submit{% else %}/productos/editar/submit{% endif %}" method="post">
+                        <input type="hidden" name="id" value="{{ producto.id }}">
+
                         <div class="mb-3">
-                            <label for="nombre" class="form-label fw-bold">Nombre del Producto</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej. Ratón inalámbrico" value="{{ producto.nombre | default('') }}" required>
+                            <label for="nombre" class="form-label fw-bold">Nombre del Producto <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control {% if hasFieldErrors('producto', 'nombre') %}is-invalid{% endif %}"
+                                   id="nombre"
+                                   name="nombre"
+                                   placeholder="Ej. Ratón inalámbrico"
+                                   value="{{ producto.nombre | default('') }}" required>
+
+                            {% if hasFieldErrors('producto', 'nombre') %}
+                            <div class="invalid-feedback">
+                                {% for err in getFieldErrors('producto', 'nombre') %}
+                                {{ err }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="categoria" class="form-label fw-bold">Categoría</label>
-                                <select class="form-select" id="categoria" name="categoria" required>
-                                    <option value="" selected disabled>Seleccione una opción...</option>
+                                <label for="categoria" class="form-label fw-bold">Categoría <span class="text-danger">*</span></label>
+                                <select class="form-select {% if hasFieldErrors('producto', 'categoria') %}is-invalid{% endif %}"
+                                        id="categoria" name="categoria" required>
+                                    <option value="" disabled {% if producto.categoria == null %}selected{% endif %}>Seleccione una opción...</option>
                                     {% for cat in categorias %}
-                                    <option value="{{ cat.nombre }}">{{ cat.nombre }}</option>
+                                    <option value="{{ cat.nombre }}" {% if producto.categoria equals cat.nombre %}selected{% endif %}>
+                                        {{ cat.nombre }}
+                                    </option>
                                     {% endfor %}
                                 </select>
+
+                                {% if hasFieldErrors('producto', 'categoria') %}
+                                <div class="invalid-feedback">
+                                    {% for err in getFieldErrors('producto', 'categoria') %}
+                                    {{ err }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="precio" class="form-label fw-bold">Precio (€)</label>
-                                <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0" placeholder="0.00" value="{{ producto.precio | default(0) }}" required>
+                                <label for="precio" class="form-label fw-bold">Precio (€) <span class="text-danger">*</span></label>
+                                <input type="number"
+                                       class="form-control {% if hasFieldErrors('producto', 'precio') %}is-invalid{% endif %}"
+                                       id="precio"
+                                       name="precio"
+                                       step="0.01" min="0"
+                                       placeholder="0.00"
+                                       value="{{ producto.precio | default(0) }}" required>
+
+                                {% if hasFieldErrors('producto', 'precio') %}
+                                <div class="invalid-feedback">
+                                    {% for err in getFieldErrors('producto', 'precio') %}
+                                    {{ err }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="descripcion" class="form-label fw-bold">Descripción</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion"  placeholder="Ej. Ratón con tecnología Wireless y duración de 4h ..." rows="4">{{ producto.descripcion | default('') }}</textarea>
+                            <label for="descripcion" class="form-label fw-bold">Descripción <span class="text-danger">*</span></label>
+                            <textarea class="form-control {% if hasFieldErrors('producto', 'descripcion') %}is-invalid{% endif %}"
+                                      id="descripcion"
+                                      name="descripcion"
+                                      placeholder="Ej. Ratón con tecnología Wireless y duración de 4h ..."
+                                      rows="4">{{ producto.descripcion | default('') }}</textarea>
+
+                            {% if hasFieldErrors('producto', 'descripcion') %}
+                            <div class="invalid-feedback">
+                                {% for err in getFieldErrors('producto', 'descripcion') %}
+                                {{ err }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                             <a href="/productos" class="btn btn-secondary me-md-2">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
                         </div>
 
                     </form>
