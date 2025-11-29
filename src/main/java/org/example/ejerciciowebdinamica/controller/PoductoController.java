@@ -1,7 +1,8 @@
 package org.example.ejerciciowebdinamica.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.example.ejerciciowebdinamica.exceptions.ProductoError;
+import org.example.ejerciciowebdinamica.errors.ProductoError;
 import org.example.ejerciciowebdinamica.models.Categoria;
 import org.example.ejerciciowebdinamica.models.Producto;
 import org.example.ejerciciowebdinamica.service.CategoriaService;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping({"/", ""})
+@Slf4j
 public class PoductoController {
     private ProductoService productoService;
     private CategoriaService categoriaService;
@@ -62,5 +64,17 @@ public class PoductoController {
     public String crearProducto(Model model) {
         model.addAttribute("producto", new Producto());
         return "productos/form";
+    }
+
+    @PostMapping("/productos/crear/submit")
+    public String crearProducto(@ModelAttribute("producto") Producto producto) {
+        try {
+            log.info("Guardando producto");
+            final String id = productoService.saveProducto(producto);
+            return "redirect:/productos/" + id;
+        } catch (Exception e) {
+            log.info("Error al crear producto: " + e.getMessage());
+            return "redirect:/productos/";
+        }
     }
 }

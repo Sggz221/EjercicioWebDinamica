@@ -28,11 +28,10 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
 
-                    <form action="/productos/guardar" method="post">
-
+                    <form action="/productos/crear/submit" method="post">
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre del Producto</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej. Ratón inalámbrico" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej. Ratón inalámbrico" value="{{ producto.nombre | default('') }}" required>
                         </div>
 
                         <div class="row">
@@ -48,13 +47,13 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="precio" class="form-label fw-bold">Precio (€)</label>
-                                <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0" placeholder="0.00" required>
+                                <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0" placeholder="0.00" value="{{ producto.precio | default(0) }}" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="descripcion" class="form-label fw-bold">Descripción</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Ej. Ratón con tecnología Wireless y duración de 4h ..." rows="4"></textarea>
+                            <textarea class="form-control" id="descripcion" name="descripcion"  placeholder="Ej. Ratón con tecnología Wireless y duración de 4h ..." rows="4">{{ producto.descripcion | default('') }}</textarea>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">

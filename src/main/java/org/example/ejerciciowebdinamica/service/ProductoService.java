@@ -2,6 +2,7 @@ package org.example.ejerciciowebdinamica.service;
 
 import lombok.val;
 import org.example.ejerciciowebdinamica.models.Producto;
+import org.example.ejerciciowebdinamica.validator.ProductoValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -133,6 +134,14 @@ public class ProductoService {
         return stream;
     }
 
+    public String saveProducto(Producto producto) {
+        ProductoValidator.validarProducto(producto); // Lanzará una excepción si no es válido
+        val id = generarId(12);
+        producto.setId(id);
+        productos.put(id, producto);
+        return id;
+    }
+
     private String generarId(Integer longitud) {
         String charArray = "QWRTYPSDFGHJKLZXCVBNMqwrtypsdfghjklzxcvbnm1234567890-";
         StringBuilder id = new StringBuilder();
@@ -141,4 +150,6 @@ public class ProductoService {
         }
         return id.toString();
     }
+
+
 }

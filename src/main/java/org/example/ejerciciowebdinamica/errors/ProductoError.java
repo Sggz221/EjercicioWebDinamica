@@ -1,4 +1,4 @@
-package org.example.ejerciciowebdinamica.exceptions;
+package org.example.ejerciciowebdinamica.errors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
