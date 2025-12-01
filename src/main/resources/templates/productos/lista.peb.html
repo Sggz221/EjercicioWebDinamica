@@ -101,7 +101,9 @@
 
                         <button type="button"
                                 class="btn btn-sm btn-outline-danger"
-                                onclick="borrarProducto('{{ producto.id }}', '{{ producto.nombre }}')">
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                onclick="prepararBorrado('{{ producto.id }}', '{{ producto.nombre }}')">
                             Borrar
                         </button>
                     </div>
@@ -121,14 +123,58 @@
 
 <form id="formBorrar" method="post" style="display: none;"></form>
 
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteModalLabel"><i class="bi bi-exclamation-triangle-fill"></i> Confirmar Eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar el producto: <br>
+                <strong id="productNamePlaceholder"></strong>?
+                <p class="text-danger small mt-2">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Sí, Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    function borrarProducto(id, nombre) {
-        if (confirm('¿Estás seguro de que quieres eliminar el producto "' + nombre + '"?')) {
+    // Variable global para almacenar el ID del producto que se va a borrar
+    let productoIdToDelete = null;
+
+    /**
+     * Prepara el modal, guarda el ID y muestra el nombre del producto.
+     * @param {string} id - El ID del producto a borrar.
+     * @param {string} nombre - El nombre del producto a borrar (para UX).
+     */
+    function prepararBorrado(id, nombre) {
+        productoIdToDelete = id;
+        document.getElementById('productNamePlaceholder').textContent = nombre;
+    }
+
+    /**
+     * Finaliza la acción, obtiene el ID guardado y envía el formulario POST.
+     */
+    document.getElementById('confirmDeleteButton').addEventListener('click', function() {
+        if (productoIdToDelete) {
             const formulario = document.getElementById('formBorrar');
-            formulario.action = '/productos/borrar/' + id;
+            formulario.action = '/productos/borrar/' + productoIdToDelete;
+
+            // Ocultar el modal antes de enviar
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+            deleteModal.hide();
+
+            // Enviar el formulario POST
             formulario.submit();
         }
-    }
+    });
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
