@@ -1,5 +1,6 @@
 package org.example.ejerciciowebdinamica.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.example.ejerciciowebdinamica.errors.ProductoError;
@@ -47,13 +48,26 @@ public class PoductoController {
                                @RequestParam(defaultValue = "id") String sortBy,
                                @RequestParam(defaultValue = "asc") String direction,
                                @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size) {
+                               @RequestParam(defaultValue = "10") int size,
+                               HttpSession httpSession) {
+        // Visitas
+        Integer visitas = (Integer) httpSession.getAttribute("visitas");
+        if (visitas == null) visitas = 0;
+        visitas++;
+        httpSession.setAttribute("visitas", visitas);
+        // Ultimo producto, visitas se controla en GlobalAdvice
+        String ultimoProducto = (String) httpSession.getAttribute("ultimoProducto");
+
+        if (ultimoProducto == null) ultimoProducto = "Ninguno";
+
+        model.addAttribute("ultimoProducto", ultimoProducto);
+        model.addAttribute("visitas", visitas);
         model.addAttribute("productos", productoService.getProductos(nombre, precioMaximo, categoria, sortBy, direction, page, size));
         return "productos/lista";
     }
 
     @GetMapping("productos/{id}")
-    public String getProducto(@PathVariable String id, Model model) {
+    public String getProducto(@PathVariable String id, Model model, HttpSession httpSession) {
         val producto = productoService.getProducto(id);
         if (producto.isEmpty()) {
             val error = new ProductoError("404", "No existe el producto con el id: " + id);
@@ -61,6 +75,7 @@ public class PoductoController {
             return "productos/errorpage";
         }
         model.addAttribute("producto", producto.get());
+        httpSession.setAttribute("ultimoProducto", producto.get().getNombre());
         return "productos/detalle";
     }
 

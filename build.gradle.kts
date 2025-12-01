@@ -33,8 +33,6 @@ dependencies {
     implementation("io.pebbletemplates:pebble-spring-boot-starter:3.2.2")
     implementation("io.pebbletemplates:pebble:3.2.4")
 
-    // Spring Boot DevTools
-    implementation("org.springframework.boot:spring-boot-devtools")
 }
 
 tasks.withType<Test> {

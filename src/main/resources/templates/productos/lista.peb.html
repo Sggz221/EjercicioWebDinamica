@@ -10,10 +10,21 @@
 <body>
 
 <nav class="navbar navbar-dark bg-dark shadow-sm mb-4">
-    <div class="container justify-content-center justify-content-md-start">
+    <div class="container justify-content-between align-items-center">
         <a class="navbar-brand fw-bold fs-3" href="http://localhost:8080/">
             Mi Tienda
         </a>
+
+        <div class="text-white text-end" style="font-size: 0.85rem;">
+            <div>
+                <i class="bi bi-eye-fill"></i> Visitas:
+                <span class="badge bg-warning text-dark">{{ visitas }}</span>
+            </div>
+            <div class="mt-1">
+                <i class="bi bi-clock-history"></i> Último visto:
+                <span class="fw-bold text-info">{{ ultimoProducto }}</span>
+            </div>
+        </div>
     </div>
 </nav>
 
@@ -143,15 +154,12 @@
     </div>
 </div>
 
-
 <script>
     // Variable global para almacenar el ID del producto que se va a borrar
     let productoIdToDelete = null;
 
     /**
      * Prepara el modal, guarda el ID y muestra el nombre del producto.
-     * @param {string} id - El ID del producto a borrar.
-     * @param {string} nombre - El nombre del producto a borrar (para UX).
      */
     function prepararBorrado(id, nombre) {
         productoIdToDelete = id;
